@@ -36,7 +36,6 @@ class _SalesChartState extends State<SalesChart>
   ];
   String merchantId = '1000001';
   late TabController _tabController;
-
   @override
   void initState() {
     _tabController = TabController(length: 3, vsync: this);
@@ -50,17 +49,25 @@ class _SalesChartState extends State<SalesChart>
         Provider.of<AuthManager>(context, listen: false).merchantId ?? '';
     http
         .get(Uri.parse(
-            'https://safe-beach-59767.herokuapp.com/merchant/ctlg/?id=$merchantId'))
+            'https://safe-beach-59767.herokuapp.com/merchant/orders/?id=$merchantId'))
         .then((value) {
-      var response = jsonDecode(value.body);
-      print('response $response');
+      var responseOrders = jsonDecode(value.body);
+      setState(() {
+        List values = cashback(responseOrders);
+        pieData = [
+          _PieData('Bank', values[0]),
+          _PieData('Card', values[1]),
+          _PieData('Merchant', values[2]),
+        ];
+      });
+      print('responseOrders $responseOrders');
     }).catchError((error) {
       print('I $error');
     });
 
     http
         .get(Uri.parse(
-        'https://safe-beach-59767.herokuapp.com/merchant/show_cashback_percents?id=$merchantId'))
+            'https://safe-beach-59767.herokuapp.com/merchant/show_cashback_percents?id=$merchantId'))
         .then((value) {
       var responseTable = jsonDecode(value.body);
       setState(() {
@@ -71,15 +78,8 @@ class _SalesChartState extends State<SalesChart>
       print('I $error');
     });
 
-    // Future.delayed(Duration(seconds: 3));
-    setState(() {
-      List values = cashback(response);
-      pieData = [
-        _PieData('Bank', values[0]),
-        _PieData('Card', values[1]),
-        _PieData('Merchant', values[2]),
-      ];
-    });
+    Future.delayed(Duration(seconds: 3));
+
     super.initState();
   }
 
@@ -99,13 +99,13 @@ class _SalesChartState extends State<SalesChart>
           controller: _tabController,
           unselectedLabelColor: Colors.black,
           tabs: [
-            const Tab(
+            Tab(
               child: Text('Cashback'),
             ),
-            const Tab(
+            Tab(
               child: Text('Продажи'),
             ),
-            const Tab(
+            Tab(
               child: Text('Настройки'),
             ),
           ],
@@ -196,10 +196,10 @@ class _SalesChartState extends State<SalesChart>
                 thStyle:
                     const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 thAlignment: TextAlign.center,
-                thVertAlignment: CrossAxisAlignment.end,
+                thVertAlignment: CrossAxisAlignment.center,
                 thPaddingBottom: 3,
                 saveIconColor: Colors.black,
-                tdAlignment: TextAlign.left,
+                tdAlignment: TextAlign.center,
                 tdEditableMaxLines: 100, // don't limit and allow data to wrap
                 tdPaddingTop: 0,
                 tdPaddingBottom: 14,
@@ -216,7 +216,7 @@ class _SalesChartState extends State<SalesChart>
   }
 }
 
-List<double> cashback(Map<String, dynamic> response) {
+List<double> cashback(Map response) {
   List<double> cashback = [0.0, 0.0, 0.0];
   for (final item in response['data']) {
     double totalPercent = 0;
@@ -241,35 +241,6 @@ List<double> cashback(Map<String, dynamic> response) {
   }
   return cashback;
 }
-
-List<dynamic> getCustomers(Map<String, dynamic> response) {
-  List<dynamic> customers = [];
-  Set<String> customerId = {};
-  for (final item in response['data']) {
-    customerId.add(item['client_id']);
-  }
-  return customers;
-}
-
-Map<String, dynamic> settings = {
-  "status": 200,
-  "merchant_id": "100001",
-  "cashback_type": "sum", // "count"
-  "cashback": {
-    "high": {
-      "cashback": 5.0,
-      "range": [21]
-    },
-    "medium": {
-      "cashback": 3.5,
-      "range": [11, 20]
-    },
-    "low": {
-      "cashback": 1.5,
-      "range": [1, 10]
-    },
-  },
-};
 
 void makeRowsFromResponse(Map response) {
   rows.clear();
@@ -311,62 +282,7 @@ Map makeAnswerMap(List rows, String merchant_id, String cashback_type) {
   return temp;
 }
 
-Map<String, dynamic> response = {
-  "status": 200,
-  "data": [
-    {
-      "sku": "111445GA8",
-      "title": "Apple iPhone 12 Pro 128Gb синий",
-      "client_id": "1000003",
-      "price": 10000,
-      "cashback": 200,
-      "cashback_percent": {"bank": 1, "payment_system": 0.5, "merchant": 0.5}
-    },
-    {
-      "sku": "111445GA8",
-      "title": "Apple iPhone 12 Pro 128Gb синий",
-      "client_id": "1000001",
-      "price": 100000,
-      "cashback": 2000,
-      "cashback_percent": {"bank": 1, "payment_system": 0.5, "merchant": 0.5}
-    },
-    {
-      "sku": "111445GA8",
-      "title": "Apple iPhone 12 Pro 128Gb синий",
-      "client_id": "1000001",
-      "price": 20000,
-      "cashback": 400,
-      "cashback_percent": {"bank": 1, "payment_system": 0.5, "merchant": 0.5}
-    },
-    {
-      "sku": "111445GA8",
-      "title": "Apple iPhone 12 Pro 128Gb синий",
-      "client_id": "1000002",
-      "price": 20000,
-      "cashback": 600,
-      "cashback_percent": {"bank": 1, "payment_system": 0.5, "merchant": 1.5}
-    },
-    {
-      "sku": "111445GA8",
-      "title": "Apple iPhone 12 Pro 128Gb синий",
-      "client_id": "1000001",
-      "price": 20000,
-      "cashback": 600,
-      "cashback_percent": {"bank": 1, "payment_system": 0.5, "merchant": 1.5}
-    }
-  ]
-};
-
-List rows = [
-  {"name": 'low', "range_from": 1, "range_to": 10, "cashback": 2.0},
-  {
-    "name": 'medium',
-    "range_from": 11,
-    "range_to": 20,
-    "cashback": 3.5,
-  },
-  {"name": 'high', "range_from": 21, "range_to": 500, "cashback": 5.0},
-];
+List rows = [];
 
 List cols = [
   {
