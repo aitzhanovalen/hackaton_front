@@ -10,11 +10,14 @@ class ProductTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<dynamic> prices = (List.from(item['merchants'])..sort((a, b) => a['price'] - b['price'])).toList();
+    List<dynamic> prices = (List.from(item['merchants'])
+          ..sort((a, b) => a['price'] - b['price']))
+        .toList();
     print('your prices $prices');
     return GestureDetector(
-      onTap: (){
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetail(item: item)));
+      onTap: () {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => ProductDetail(item: item)));
       },
       child: Container(
         padding: const EdgeInsets.all(16.0),
@@ -52,15 +55,26 @@ class ProductTile extends StatelessWidget {
                   SizedBox(
                     height: 15.0,
                   ),
-                  Text(item['description'], maxLines: 2, textAlign: TextAlign.justify,),
-                  SizedBox(height: 30,),
+                  Text(
+                    item['description'],
+                    maxLines: 2,
+                    textAlign: TextAlign.justify,
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                    Text(prices.first['price'].toString(), style: TextStyle(fontWeight: FontWeight.bold),),
-                    Text(' - ${prices.last['price']} TG', style: TextStyle(fontWeight: FontWeight.bold)),
-                  ],)
+                      Text(
+                        prices.first['price'].toString(),
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(' - ${prices.last['price']} TG',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                    ],
+                  )
                 ],
               ),
             )

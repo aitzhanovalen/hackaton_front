@@ -63,77 +63,77 @@ class ProductDetail extends StatelessWidget {
   Widget _renderMerchants(BuildContext context, List<dynamic> merchants) {
     return Column(
       children: merchants.map((merchant) {
-        print(merchant);
-        //Merchant item = Merchant.fromJson(merchant);
+        // print(merchant);
+        Merchant item = Merchant.fromJson(merchant);
         return Container(
-          // decoration: BoxDecoration(
-          //   border: Border(
-          //     top: BorderSide(width: .3, color: Colors.grey),
-          //     // bottom: BorderSide(width: 16.0, color: Colors.lightBlue.shade900),
-          //   ),
-          //   color: Colors.white,
-          // ),
-          // padding: const EdgeInsets.symmetric(vertical: 8.0),
-          // child: GestureDetector(
-          //   onTap: () {
-          //     showDialog(
-          //         context: context,
-          //         builder: (context) {
-          //           return AlertDialog(
-          //             title: Text(item.name),
-          //             content: Text('Хотите купить у ${item.name} за ${item.price} тг и получить кэшбэк в размере ${item.cashback} тг?'),
-          //             actions: [
-          //               TextButton(
-          //                 child: Text('Отмена'),
-          //                 onPressed: (){
-          //                   Navigator.pop(context);
-          //                 },
-          //               ),
-          //               TextButton(
-          //                 child: Text('ОК'),
-          //                 onPressed: () {
-          //                   Navigator.pop(context);
-          //                 },
-          //               ),
-          //             ],
-          //           );
-          //         });
-          //   },
-          //   child: Container(
-          //     color: Colors.transparent,
-          //     child: Row(
-          //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //       children: [
-          //         Column(
-          //           crossAxisAlignment: CrossAxisAlignment.start,
-          //           children: [
-          //             Text('Продавец:  '),
-          //             SizedBox(
-          //               height: 8.0,
-          //             ),
-          //             Text(item.name),
-          //           ],
-          //         ),
-          //         Column(
-          //           crossAxisAlignment: CrossAxisAlignment.start,
-          //           children: [
-          //             Row(children: [
-          //               Text('Цена:  '),
-          //               Text(item.price.toString()),
-          //             ]),
-          //             SizedBox(
-          //               height: 8.0,
-          //             ),
-          //             Row(children: [
-          //               Text('Cashback:  '),
-          //               Text(item.cashback.toString()),
-          //             ]),
-          //           ],
-          //         )
-          //       ],
-          //     ),
-          //   ),
-          // ),
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(width: .3, color: Colors.grey),
+              // bottom: BorderSide(width: 16.0, color: Colors.lightBlue.shade900),
+            ),
+            color: Colors.white,
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: GestureDetector(
+            onTap: () {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text(item.name?? ''),
+                      content: Text('Хотите купить у ${item.name} за ${item.price} тг и получить кэшбэк в размере ${item.cashback} тг?'),
+                      actions: [
+                        TextButton(
+                          child: Text('Отмена'),
+                          onPressed: (){
+                            Navigator.pop(context);
+                          },
+                        ),
+                        TextButton(
+                          child: Text('ОК'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    );
+                  });
+            },
+            child: Container(
+              color: Colors.transparent,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Продавец:  '),
+                      SizedBox(
+                        height: 8.0,
+                      ),
+                      Text(item.name?? ''),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(children: [
+                        Text('Цена:  '),
+                        Text(item.price.toString()),
+                      ]),
+                      SizedBox(
+                        height: 8.0,
+                      ),
+                      Row(children: [
+                        Text('Cashback:  '),
+                        Text(item.cashback.toString()),
+                      ]),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ),
         );
       }).toList(),
     );
@@ -142,10 +142,10 @@ class ProductDetail extends StatelessWidget {
 
 class Merchant {
   final String merchantId;
-  final double price;
-  final double cashBackPercent;
+  final int price;
+  final num cashBackPercent;
   final double cashback;
-  final String name;
+  final String? name;
 
   const Merchant(
       {required this.merchantId,

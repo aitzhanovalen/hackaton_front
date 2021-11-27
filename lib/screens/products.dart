@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 
 class Products extends StatefulWidget {
   const Products({Key? key}) : super(key: key);
+  final String customerId = '';
 
   @override
   _ProductsState createState() => _ProductsState();
@@ -13,6 +14,8 @@ class Products extends StatefulWidget {
 
 class _ProductsState extends State<Products> {
   List<dynamic> products = [];
+
+
 
   @override
   void initState() {
