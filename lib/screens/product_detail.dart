@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
 class ProductDetail extends StatelessWidget {
   final Map<String, dynamic> item;
@@ -52,7 +55,7 @@ class ProductDetail extends StatelessWidget {
               SizedBox(
                 height: 15,
               ),
-              _renderMerchants(context, item['merchants']),
+              _renderMerchants(context, item['merchants'], item['_id']),
             ],
           ),
         ),
@@ -60,7 +63,27 @@ class ProductDetail extends StatelessWidget {
     );
   }
 
-  Widget _renderMerchants(BuildContext context, List<dynamic> merchants) {
+  Future<void> buyFunction(Merchant item, String productId) async {
+    final kek = await post(
+      Uri.parse('https://jsonplaceholder.typicode.com/albums'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        "m_id": item.merchantId,
+        "c_id": 1000,
+        "p_id": productId,
+        "price": item.price,
+        "cashback_percent": item.cashBackPercent,
+        "card_type": "kaspi"
+      }),
+    );
+    print(kek.body);
+    print(kek.statusCode);
+  }
+
+  Widget _renderMerchants(
+      BuildContext context, List<dynamic> merchants, String productId) {
     return Column(
       children: merchants.map((merchant) {
         // print(merchant);
@@ -80,18 +103,20 @@ class ProductDetail extends StatelessWidget {
                   context: context,
                   builder: (context) {
                     return AlertDialog(
-                      title: Text(item.name?? ''),
-                      content: Text('Хотите купить у ${item.name} за ${item.price} тг и получить кэшбэк в размере ${item.cashback} тг?'),
+                      title: Text(item.name ?? ''),
+                      content: Text(
+                          'Хотите купить у ${item.name} за ${item.price} тг и получить кэшбэк в размере ${item.cashback} тг?'),
                       actions: [
                         TextButton(
                           child: Text('Отмена'),
-                          onPressed: (){
+                          onPressed: () {
                             Navigator.pop(context);
                           },
                         ),
                         TextButton(
                           child: Text('ОК'),
-                          onPressed: () {
+                          onPressed: () async {
+                            buyFunction(item, productId);
                             Navigator.pop(context);
                           },
                         ),
@@ -111,7 +136,7 @@ class ProductDetail extends StatelessWidget {
                       SizedBox(
                         height: 8.0,
                       ),
-                      Text(item.name?? ''),
+                      Text(item.name ?? ''),
                     ],
                   ),
                   Column(
@@ -160,6 +185,6 @@ class Merchant {
         price: item['price'],
         cashBackPercent: item['cashback_percent'],
         cashback: item['cashback'],
-        name: item['name']);
+        name: item['merchant_name']);
   }
 }
