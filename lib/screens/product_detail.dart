@@ -144,7 +144,7 @@ class Merchant {
   final String merchantId;
   final int price;
   final num cashBackPercent;
-  final double cashback;
+  final num cashback;
   final String? name;
 
   const Merchant(

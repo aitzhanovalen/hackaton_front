@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:hack/models/auth_manager.dart';
+import 'package:provider/provider.dart';
 import 'screens.dart';
 
 class FirstScreen extends StatefulWidget {
@@ -24,19 +25,19 @@ class _FirstScreenState extends State<FirstScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Программа лояльности'),
+        title: const Text('Программа лояльности'),
       ),
       body: Container(
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('логин покупателя'),
-                SizedBox(
-                  width: 20,
-                ),
+                const Text('покупатель'),
                 Container(
-                  width:150,
+                  padding: const EdgeInsets.all(20),
+                  width: 150,
                   child: TextField(
                     decoration:
                         const InputDecoration(fillColor: Colors.transparent),
@@ -45,20 +46,41 @@ class _FirstScreenState extends State<FirstScreen> {
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Products()));
+                    Provider.of<AuthManager>(context, listen: false)
+                        .customerId = customerController.text;
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Products()));
                   },
-                  child: Text("Войти"),
+                  child: const Text("Войти"),
                 )
               ],
             ),
-            SizedBox(
-              height: 20,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('продавец'),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  width: 150,
+                  child: TextField(
+                    decoration:
+                        const InputDecoration(fillColor: Colors.transparent),
+                    controller: merchantController,
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Provider.of<AuthManager>(context, listen: false)
+                        .merchantId = merchantController.text;
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => SalesChart()));
+                  },
+                  child: const Text("Войти"),
+                )
+              ],
             ),
-            Text('логин продавца'),
-            TextField(
-              controller: merchantController,
-            )
           ],
         ),
       ),
