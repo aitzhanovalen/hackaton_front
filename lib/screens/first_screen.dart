@@ -14,8 +14,8 @@ class FirstScreen extends StatefulWidget {
 class _FirstScreenState extends State<FirstScreen> {
   @override
   void initState() {
-    customerController.text = '0000001';
-    merchantController.text = '0000002';
+    customerController.text = '1000001';
+    merchantController.text = '1000001';
     super.initState();
   }
 
