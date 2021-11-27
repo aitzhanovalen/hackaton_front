@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:hack/models/auth_manager.dart';
 import 'package:http/http.dart';
+import 'package:provider/provider.dart';
 
 class ProductDetail extends StatefulWidget {
   final Map<String, dynamic> item;
@@ -70,7 +72,8 @@ class _ProductDetailState extends State<ProductDetail> {
     );
   }
 
-  Future<void> buyFunction(Merchant item, String productId, String card) async {
+  Future<void> buyFunction(
+      Merchant item, String productId, String card, String customerId) async {
     final kek = await post(
       Uri.parse('https://jsonplaceholder.typicode.com/albums'),
       headers: <String, String>{
@@ -78,7 +81,7 @@ class _ProductDetailState extends State<ProductDetail> {
       },
       body: jsonEncode(<String, dynamic>{
         "m_id": item.merchantId,
-        "c_id": 1000,
+        "c_id": customerId,
         "p_id": productId,
         "price": item.price,
         "cashback_percent": item.cashBackPercent,
@@ -91,6 +94,7 @@ class _ProductDetailState extends State<ProductDetail> {
 
   Widget _renderMerchants(
       BuildContext context, List<dynamic> merchants, String productId) {
+    final customerId = Provider.of<AuthManager>(context).customerId;
     var _value = 'kaspi';
     return Column(
       children: merchants.map((merchant) {
@@ -159,7 +163,7 @@ class _ProductDetailState extends State<ProductDetail> {
                           TextButton(
                             child: Text('ОК'),
                             onPressed: () async {
-                              buyFunction(item, productId, _value);
+                              buyFunction(item, productId, _value, customerId!);
                               Navigator.pop(context);
                             },
                           ),

@@ -15,8 +15,6 @@ class Products extends StatefulWidget {
 class _ProductsState extends State<Products> {
   List<dynamic> products = [];
 
-
-
   @override
   void initState() {
     http
@@ -38,6 +36,9 @@ class _ProductsState extends State<Products> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Товары'),
+      ),
       body: ListView.builder(
         itemBuilder: (context, index) => ProductTile(item: products[index]),
         itemCount: products.length,
