@@ -130,13 +130,50 @@ class _SalesChartState extends State<SalesChart>
                 ]),
           if (_tabIndex == 2)
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 //TODO save route
                 String merchantId =
                     Provider.of<AuthManager>(context, listen: false)
                             .merchantId ??
                         '';
+                final kek = await http.post(
+                  Uri.parse(
+                      'https://safe-beach-59767.herokuapp.com/merchant/create_cashback_percents'),
+                  headers: <String, String>{
+                    'Content-Type': 'application/json; charset=UTF-8',
+                  },
+                  body: jsonEncode(<String, dynamic>{
+                    "merchant_id": merchantId,
+                    "cashback_type": "sum",
+                    "cashback": {
+                      "high": {
+                        "cashback": rows[0]['cashback'],
+                        "range": [
+                          rows[0]['range_from'],
+                          rows[0]['range_to'],
+                        ]
+                      },
+                      "medium": {
+                        "cashback": rows[1]['cashback'],
+                        "range": [
+                          rows[1]['range_from'],
+                          rows[1]['range_to'],
+                        ]
+                      },
+                      "low": {
+                        "cashback": rows[2]['cashback'],
+                        "range": [
+                          rows[2]['range_from'],
+                          rows[2]['range_to'],
+                        ]
+                      }
+                    }
+                  }),
+                );
+                print(kek.statusCode);
+                print(kek.body);
                 print(makeAnswerMap(rows, merchantId, 'sum'));
+
                 print(merchantId);
               },
               child: const Text("Сохранить"),
