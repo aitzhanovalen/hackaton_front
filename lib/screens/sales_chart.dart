@@ -77,7 +77,6 @@ class _SalesChartState extends State<SalesChart>
 
   @override
   Widget build(BuildContext context) {
-    bool _value = false;
     int val = -1;
     return Scaffold(
       appBar: AppBar(
@@ -120,8 +119,12 @@ class _SalesChartState extends State<SalesChart>
             TextButton(
               onPressed: () {
                 //TODO save route
-                print(Provider.of<AuthManager>(context, listen: false)
-                    .merchantId);
+                String merchantId =
+                    Provider.of<AuthManager>(context, listen: false)
+                            .merchantId ??
+                        '';
+                print(makeAnswerMap(rows, merchantId, 'sum'));
+                print(merchantId);
               },
               child: const Text("Сохранить"),
             ),
@@ -254,6 +257,46 @@ Map<String, dynamic> settings = {
     },
   },
 };
+
+void makeRowsFromResponse(Map response) {
+  rows.clear();
+  rows.add({
+    "name": "high",
+    "range_from": response['cashback']['high']['range'][0],
+    "range_to": '',
+    "cashback": response['cashback']['high']['cashback']
+  });
+  rows.add({
+    "name": "medium",
+    "range_from": response['cashback']['medium']['range'][0],
+    "range_to": response['cashback']['medium']['range'][1],
+    "cashback": response['cashback']['medium']['cashback']
+  });
+  rows.add({
+    "name": "low",
+    "range_from": response['cashback']['low']['range'][0],
+    "range_to": response['cashback']['low']['range'][1],
+    "cashback": response['cashback']['low']['cashback']
+  });
+}
+
+Map makeAnswerMap(List rows, String merchant_id, String cashback_type) {
+  Map map = {};
+  for (int i = 0; i < rows.length; i++) {
+    map.addAll({
+      rows[i]['name']: {
+        "cashback": rows[i]['cashback'],
+        "range": [rows[i]['range_from'], rows[i]['range_to']]
+      }
+    });
+  }
+  Map temp = {
+    "merchant_id": merchant_id,
+    "cashback_type": cashback_type,
+    "cashback": map
+  };
+  return temp;
+}
 
 Map<String, dynamic> response = {
   "status": 200,
