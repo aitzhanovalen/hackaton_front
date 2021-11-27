@@ -1,10 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:hack/main.dart';
+import 'package:hack/models/auth_manager.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:syncfusion_flutter_charts/sparkcharts.dart';
+import 'package:http/http.dart' as http;
 
 class SalesChart extends StatefulWidget {
-  // ignore: prefer_const_constructors_in_immutables
   SalesChart({Key? key}) : super(key: key);
 
   @override
@@ -17,10 +19,8 @@ class _PieData {
     this.yData,
   );
 
-  // this.text);
   final String xData;
   final num yData;
-// final String text;
 }
 
 class _SalesChartState extends State<SalesChart> {
@@ -31,10 +31,22 @@ class _SalesChartState extends State<SalesChart> {
     // _PieData('Apr', 32, ),
     // _PieData('May', 40, )
   ];
+  String merchantId = '1000001';
 
   @override
   void initState() {
-    Future.delayed(Duration(seconds: 3));
+    merchantId = Provider.of<AuthManager>(context, listen: false).merchantId ?? '';
+    http
+        .get(Uri.parse(
+        'https://safe-beach-59767.herokuapp.com/merchant/ctlg/?id=$merchantId'))
+        .then((value) {
+      var response = jsonDecode(value.body);
+      print(response);
+    }).catchError((error) {
+      print('I diagnose you with gay');
+    });
+
+    // Future.delayed(Duration(seconds: 3));
     setState(() {
       List values = cashback(response);
       pieData = [
@@ -44,6 +56,11 @@ class _SalesChartState extends State<SalesChart> {
       ];
     });
     super.initState();
+  }
+  @override
+  void didChangeDependencies() {
+
+    super.didChangeDependencies();
   }
 
   @override
@@ -136,6 +153,35 @@ List<double> cashback(Map<String, dynamic> response) {
   }
   return cashback;
 }
+
+List<dynamic> getCustomers(Map<String, dynamic> response) {
+  List<dynamic> customers = [];
+  Set<String> customerId = {};
+  for (final item in response['data']) {
+    customerId.add(item['client_id']);
+  }
+  return customers;
+}
+
+Map<String, dynamic> settings = {
+  "status": 200,
+  "merchant_id":"100001",
+  "cashback_type":"sum",// "count"
+  "data":[
+    {"sum_min":0,
+      "sum_max":50000,
+      "cashback":1.0
+    },
+    {"sum_min":50001,
+      "sum_max":100000,
+      "cashback":1.5
+    },
+    {"sum_min":100001,
+      "sum_max":500000000000,
+      "cashback":2.0
+    }
+  ]
+};
 
 Map<String, dynamic> response = {
   "status": 200,
