@@ -53,9 +53,22 @@ class _SalesChartState extends State<SalesChart>
             'https://safe-beach-59767.herokuapp.com/merchant/ctlg/?id=$merchantId'))
         .then((value) {
       var response = jsonDecode(value.body);
-      print(response);
+      print('response $response');
     }).catchError((error) {
-      print('I diagnose you with gay');
+      print('I $error');
+    });
+
+    http
+        .get(Uri.parse(
+        'https://safe-beach-59767.herokuapp.com/merchant/show_cashback_percents?id=$merchantId'))
+        .then((value) {
+      var responseTable = jsonDecode(value.body);
+      setState(() {
+        makeRowsFromResponse(responseTable);
+      });
+      print('responseTable: $responseTable');
+    }).catchError((error) {
+      print('I $error');
     });
 
     // Future.delayed(Duration(seconds: 3));
