@@ -129,6 +129,11 @@ class _SalesChartState extends State<SalesChart>
                     Provider.of<AuthManager>(context, listen: false)
                             .merchantId ??
                         '';
+                saveSettings(
+                  rows: rows,
+                  merchantId: merchantId,
+                  cashbackType: val,
+                );
                 final kek = await http.post(
                   Uri.parse(
                       'https://safe-beach-59767.herokuapp.com/merchant/create_cashback_percents'),
@@ -316,7 +321,7 @@ List rows = [];
 void saveTable(Map map) {
   for (final item in map.keys) {
     if (item != 'row') {
-      rows[map['row']][item] = map[item];
+      rows[map['row']][item] = num.parse(map[item]);
     }
   }
 }
@@ -332,3 +337,23 @@ List cols = [
   {"title": 'До', 'widthFactor': 0.2, 'key': 'range_to'},
   {"title": 'cashback', 'key': 'cashback'},
 ];
+
+Future<void> saveSettings({
+  required List rows,
+  required String merchantId,
+  required String cashbackType,
+}) async {
+  final kek = await http.post(
+    Uri.parse('https://safe-beach-59767.herokuapp.com/merchant/create_cashback_percents'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: json.encode(makeAnswerMap(
+      rows,
+      merchantId,
+      cashbackType,
+    )),
+  );
+  print(kek.body);
+  print('statusCode: ${kek.statusCode}');
+}

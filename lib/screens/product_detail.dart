@@ -123,7 +123,7 @@ class _ProductDetailState extends State<ProductDetail> {
                           child: Column(
                             children: [
                               Text(
-                                  'Хотите купить у ${item.name} за ${item.price} тг и получить кэшбэк в размере ${item.cashback} тг?'),
+                                  'Хотите купить у ${item.name} за ${item.price} тг\nи получить кэшбэк в размере ${item.cashback} тг?'),
                               const SizedBox(
                                 height: 10.0,
                               ),
