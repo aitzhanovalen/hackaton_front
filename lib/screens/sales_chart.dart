@@ -27,20 +27,14 @@ class _PieData {
 class _SalesChartState extends State<SalesChart>
     with SingleTickerProviderStateMixin {
   int _tabIndex = 0;
-  List<_PieData> pieData = [
-    // _PieData('Jan', 35, ),
-    // _PieData('Feb', 28, ),
-    // _PieData('Mar', 34, ),
-    // _PieData('Apr', 32, ),
-    // _PieData('May', 40, )
-  ];
+  String val = '';
+  List<_PieData> pieData = [];
   String merchantId = '1000001';
   late TabController _tabController;
   @override
   void initState() {
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() {
-      print(_tabController.index);
       setState(() {
         _tabIndex = _tabController.index;
       });
@@ -60,7 +54,6 @@ class _SalesChartState extends State<SalesChart>
           _PieData('Merchant', values[2]),
         ];
       });
-      print('responseOrders $responseOrders');
     }).catchError((error) {
       print('I $error');
     });
@@ -72,13 +65,14 @@ class _SalesChartState extends State<SalesChart>
       var responseTable = jsonDecode(value.body);
       setState(() {
         makeRowsFromResponse(responseTable);
+        val = responseTable['cashback_type'];
       });
-      print('responseTable: $responseTable');
+      // print('responseTable: $responseTable');
     }).catchError((error) {
       print('I $error');
     });
 
-    Future.delayed(Duration(seconds: 3));
+    Future.delayed(const Duration(seconds: 3));
 
     super.initState();
   }
@@ -90,7 +84,6 @@ class _SalesChartState extends State<SalesChart>
 
   @override
   Widget build(BuildContext context) {
-    int val = -1;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Syncfusion Flutter chart'),
@@ -98,7 +91,7 @@ class _SalesChartState extends State<SalesChart>
           isScrollable: true,
           controller: _tabController,
           unselectedLabelColor: Colors.black,
-          tabs: [
+          tabs: const [
             Tab(
               child: Text('Cashback'),
             ),
@@ -115,19 +108,19 @@ class _SalesChartState extends State<SalesChart>
         children: [
           if (_tabIndex == 0)
             SfCircularChart(
-                title: ChartTitle(text: 'Sales by sales person'),
-                legend: Legend(isVisible: true),
-                series: <PieSeries<_PieData, String>>[
-                  PieSeries<_PieData, String>(
-                      explode: true,
-                      explodeIndex: 0,
-                      dataSource: pieData,
-                      xValueMapper: (_PieData data, _) => data.xData,
-                      yValueMapper: (_PieData data, _) => data.yData,
-                      // dataLabelMapper: (_PieData data, _) => data.text,
-                      dataLabelSettings:
-                          const DataLabelSettings(isVisible: true)),
-                ]),
+              title: ChartTitle(text: 'Sales by sales person'),
+              legend: Legend(isVisible: true),
+              series: <PieSeries<_PieData, String>>[
+                PieSeries<_PieData, String>(
+                    explode: true,
+                    explodeIndex: 0,
+                    dataSource: pieData,
+                    xValueMapper: (_PieData data, _) => data.xData,
+                    yValueMapper: (_PieData data, _) => data.yData,
+                    dataLabelSettings:
+                        const DataLabelSettings(isVisible: true)),
+              ],
+            ),
           if (_tabIndex == 2)
             TextButton(
               onPressed: () {
@@ -145,30 +138,27 @@ class _SalesChartState extends State<SalesChart>
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                // Row(children: [
-                //   Gesture
-                // ],)
                 ListTile(
-                  title: Text("По количеству продаж"),
+                  title: const Text("По общей сумме"),
                   leading: Radio(
-                    value: 1,
+                    value: 'sum',
                     groupValue: val,
                     onChanged: (value) {
                       setState(() {
-                        val = value == true ? 1 : 2;
+                        val = 'sum';
                       });
                     },
                     activeColor: Colors.green,
                   ),
                 ),
                 ListTile(
-                  title: Text("По общей сумме"),
+                  title: const Text("По количеству продаж"),
                   leading: Radio(
-                    value: 2,
+                    value: 'count',
                     groupValue: val,
                     onChanged: (value) {
                       setState(() {
-                        val = value == true ? 2 : 1;
+                        val = 'count';
                       });
                     },
                     activeColor: Colors.green,
@@ -185,10 +175,10 @@ class _SalesChartState extends State<SalesChart>
                 stripeColor1: Colors.blue.shade100,
                 stripeColor2: Colors.grey.shade200,
                 onRowSaved: (value) {
-                  print(value);
+                  saveTable(value);
                 },
                 onSubmitted: (value) {
-                  print(value);
+                  // print(rows);
                 },
                 borderColor: Colors.blueGrey,
                 tdStyle: const TextStyle(fontWeight: FontWeight.bold),
@@ -198,6 +188,8 @@ class _SalesChartState extends State<SalesChart>
                 thAlignment: TextAlign.center,
                 thVertAlignment: CrossAxisAlignment.center,
                 thPaddingBottom: 3,
+                saveIcon: Icons.save,
+                showSaveIcon: true,
                 saveIconColor: Colors.black,
                 tdAlignment: TextAlign.center,
                 tdEditableMaxLines: 100, // don't limit and allow data to wrap
@@ -205,7 +197,7 @@ class _SalesChartState extends State<SalesChart>
                 tdPaddingBottom: 14,
                 tdPaddingLeft: 10,
                 tdPaddingRight: 8,
-                focusedBorder: OutlineInputBorder(
+                focusedBorder: const OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.blue),
                     borderRadius: BorderRadius.all(Radius.circular(0))),
               ),
@@ -264,7 +256,7 @@ void makeRowsFromResponse(Map response) {
   });
 }
 
-Map makeAnswerMap(List rows, String merchant_id, String cashback_type) {
+Map makeAnswerMap(List rows, String merchantId, String cashbackType) {
   Map map = {};
   for (int i = 0; i < rows.length; i++) {
     map.addAll({
@@ -275,14 +267,22 @@ Map makeAnswerMap(List rows, String merchant_id, String cashback_type) {
     });
   }
   Map temp = {
-    "merchant_id": merchant_id,
-    "cashback_type": cashback_type,
+    "merchant_id": merchantId,
+    "cashback_type": cashbackType,
     "cashback": map
   };
   return temp;
 }
 
 List rows = [];
+
+void saveTable(Map map) {
+  for (final item in map.keys) {
+    if (item != 'row') {
+      rows[map['row']][item] = map[item];
+    }
+  }
+}
 
 List cols = [
   {
