@@ -75,7 +75,7 @@ class _ProductDetailState extends State<ProductDetail> {
   Future<void> buyFunction(
       Merchant item, String productId, String card, String customerId) async {
     final kek = await post(
-      Uri.parse('https://jsonplaceholder.typicode.com/albums'),
+      Uri.parse('https://safe-beach-59767.herokuapp.com/product/buy'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

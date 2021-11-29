@@ -293,7 +293,7 @@ void makeRowsFromResponse(Map response) {
   rows.add({
     "name": "high",
     "range_from": response['cashback']['high']['range'][0],
-    "range_to": '',
+    "range_to": response['cashback']['high']['range'][1]??'',
     "cashback": response['cashback']['high']['cashback']
   });
   rows.add({
@@ -421,7 +421,7 @@ class NotificationCard extends StatelessWidget {
           ),
           Container(
             child: Text(
-              'Цуна: $price',
+              'Цена: $price',
               style: const TextStyle(color: Colors.grey, fontSize: 12.0),
             ),
           ),

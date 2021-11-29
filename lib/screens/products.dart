@@ -1,12 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:hack/models/auth_manager.dart';
 import 'package:hack/widgets/product_tile.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class Products extends StatefulWidget {
   const Products({Key? key}) : super(key: key);
-  final String customerId = '';
 
   @override
   _ProductsState createState() => _ProductsState();
@@ -14,11 +15,14 @@ class Products extends StatefulWidget {
 
 class _ProductsState extends State<Products> {
   List<dynamic> products = [];
+  String customerId = '';
 
   @override
   void initState() {
+    customerId =
+        Provider.of<AuthManager>(context, listen: false).customerId ?? '';
     http
-        .get(Uri.parse('https://safe-beach-59767.herokuapp.com/product/ctlg/'))
+        .get(Uri.parse('https://safe-beach-59767.herokuapp.com/product/ctlg/?c_id=$customerId'))
         .then((value) {
       Map<String, dynamic> response = jsonDecode(value.body);
       print(jsonDecode(value.body));
@@ -28,7 +32,7 @@ class _ProductsState extends State<Products> {
         });
       }
     }).catchError((error) {
-      print('You suck $error');
+      print('Your: $error');
     });
     super.initState();
   }
